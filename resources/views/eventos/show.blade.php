@@ -6,6 +6,17 @@
     <p>{{ $evento->descripcion }}</p>
     <p><strong>Fecha:</strong> {{ $evento->fecha }}</p>
 
-    {{-- Aquí después agregaremos lógica para inscripción, carga de archivos, etc --}}
+    @auth
+        @if (auth()->user()->is_admin)
+            <p class="text-warning">Eres administrador. No puedes inscribirte.</p>
+        @elseif ($evento->usuarios->contains(auth()->user()->id))
+            <p class="text-success">Ya estás inscrito en este evento.</p>
+        @else
+            <form method="POST" action="{{ route('eventos.inscribirse', $evento) }}">
+                @csrf
+                <button class="btn btn-primary">Inscribirse</button>
+            </form>
+        @endif
+    @endauth
 </div>
 @endsection

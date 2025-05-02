@@ -3,9 +3,11 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\EventoController;
+use App\Models\Evento;
 
 Route::get('/', function () {
-    return view('welcome');
+    $eventos = Evento::where('fecha', '>=', now())->orderBy('fecha')->get();
+    return view('welcome', compact('eventos'));
 });
 
 Route::get('/dashboard', function () {
@@ -21,5 +23,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/eventos', [EventoController::class, 'index'])->name('eventos.index');
     Route::get('/eventos/{evento}', [EventoController::class, 'show'])->name('eventos.show');
 });
+
+Route::post('/eventos/{evento}/inscribirse', [EventoController::class, 'inscribirse'])
+    ->name('eventos.inscribirse')
+    ->middleware(['auth']);
+
 
 require __DIR__.'/auth.php';

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Evento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+
 
 class EventoController extends Controller
 {
@@ -20,4 +22,23 @@ class EventoController extends Controller
     {
         return view('eventos.show', compact('evento'));
     }
+
+    public function inscribirse(Evento $evento)
+    {
+        $user = auth()->user();
+    
+        if ($user->is_admin) {
+            abort(403, 'Solo los alumnos pueden inscribirse.');
+        }
+    
+        if ($evento->usuarios->contains($user->id)) {
+            return back()->with('error', 'Ya estás inscrito en este evento.');
+        }
+    
+        $evento->usuarios()->attach($user->id);
+    
+        return back()->with('success', 'Te has inscrito correctamente.');
+    }
+    
 }
+
