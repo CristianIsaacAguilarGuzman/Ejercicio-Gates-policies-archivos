@@ -40,5 +40,19 @@ class EventoController extends Controller
         return back()->with('success', 'Te has inscrito correctamente.');
     }
     
+    public function cancelarInscripcion(Evento $evento)
+    {
+        $user = auth()->user();
+    
+        if (! $evento->usuarios->contains($user->id)) {
+            return back()->with('error', 'No estás inscrito en este evento.');
+        }
+    
+        $evento->usuarios()->detach($user->id);
+    
+        return back()->with('success', 'Has cancelado tu inscripción correctamente.');
+    }
+    
+
 }
 
